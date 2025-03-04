@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .board {
+      border: 1px solid black;
+      border-collapse: collapse;
+    }
+
+    .board tr td {
+      border: 2px solid black;
+      width: 60px;
+      height: 60px;
+      padding: 20px;
+      text-align: center;
+      font-size: 2.4rem;
+    }
+
+  </style>
+</head>
+<body>
+  
+  <h1>Tic Tac Toe</h1>
+  <table class="board">
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </table>
+  <script>
+    const board = document.querySelector('.board');
+    const cells = board.querySelectorAll('td');
+    const header = document.querySelector('h1');
+
+    let player = 'X';
+    let bot = 'O';
+    let ourTurn = true;
+    let moveCount = cells.length;
+    let gameRepresentation = [
+      ["", "", ""],
+      ["", "", ""],
+      ["", "", ""]
+    ];
+    let col = 0;
+    let row = 0;
+
+    let optionPool = new Set([0, 1, 2, 3, 4, 5, 6, 7, 8]);
+
+    let gameOver = false;
+
+    const playGame = () => {
+      
+      const displayWinner = (player) => {
+        header.textContent = `${player} wins!`;
+      }
+
+      // there are only 8 possible ways to win
+      // 3 rows, 3 columns, 2 diagonals
+      // this function returns a boolean
+      // if true or not
+      const checkWin = () => {
+        // check rows
+        for (let i = 0; i < 3; i++) {
+          if (
+            gameRepresentation[i][0] !== "" &&
+            gameRepresentation[i][0] === gameRepresentation[i][1] &&
+            gameRepresentation[i][1] === gameRepresentation[i][2]
+          ) {
+            console.log(`${gameRepresentation[i][0]} wins (row ${i + 1})`);
+            gameOver = true;
+            return; // exit early if a win is found
+          }
+        }
+
+        // check columns
+        for (let j = 0; j < 3; j++) {
+          if (
+            gameRepresentation[0][j] !== "" &&
+            gameRepresentation[0][j] === gameRepresentation[1][j] &&
+            gameRepresentation[1][j] === gameRepresentation[2][j]
+          ) {
+            console.log(`${gameRepresentation[0][j]} wins (column ${j + 1})`);
+            gameOver = true;
+            return;
+          }
+        }
+
+        // check diagonals
+        if (
+          gameRepresentation[0][0] !== "" &&
+          gameRepresentation[0][0] === gameRepresentation[1][1] &&
+          gameRepresentation[1][1] === gameRepresentation[2][2]
+        ) {
+          console.log(`${gameRepresentation[0][0]} wins (diagonal from top-left)`);
+          gameOver = true;
+          return;
+        }
+
+        if (
+          gameRepresentation[0][2] !== "" &&
+          gameRepresentation[0][2] === gameRepresentation[1][1] &&
+          gameRepresentation[1][1] === gameRepresentation[2][0]
+        ) {
+          console.log(`${gameRepresentation[0][2]} wins (diagonal from top-right)`);
+          gameOver = true;
+          return;
+        }
+
+        //check for draw (no empty cells left)
+        if (moveCount === 0) {
+          console.log("It's a draw!");
+          gameOver = true;
+          return;
+        }
+
+        console.log("No winner yet");
+      };
+
+
+      // picks a random position based on number of available positions
+      const botMove = () => {
+        if (optionPool.size > 0 && !gameOver) {
+          // get a random element from the option pool set
+          let randomIndex = Math.floor(Math.random() * optionPool.size); // random index from 0 to size of set
+          let i = 0;
+          let choice;
+          for (let item of optionPool) { // sets do not support get by index, you must loop to find the index
+              if (i === randomIndex) {
+                choice = item;
+                break;
+              }
+              i++;
+          }
+
+          cells[choice].textContent = bot; // add O to the board
+
+          row = Math.floor(choice / 3);
+          col = choice % 3;
+
+          gameRepresentation[row][col] = bot;
+          optionPool.delete(choice); // remove value from optionPool set
+          ourTurn = true;
+          moveCount -= 1; // move towards end game
+
+          console.log(gameRepresentation); // state check
+          console.log(optionPool); // state check
+          checkWin();
+          // if bot wins, end game
+          if (gameOver) {
+            displayWinner("Pablo GPT");
+          }
+        }
+      }
+
+      // TODO
+      // Resets the game to the original state
+      const resetGame = () => {
+
+      }
+
+      // TODO
+      // Renders a reset button on game end
+      const displayReset = () => {
+
+      }
+
+      // starts the game and adds event listeners
+      // to listen for clicks on each cell of the
+      // tic-tac-toe board
+      for (let i = 0; i < cells.length; i++) {
+        cells[i].addEventListener('click', () => {
+          // what we do onclick
+          if (ourTurn && !gameOver && optionPool.has(i)) {
+            cells[i].textContent = player; // add X to the board
+            row = Math.floor(i / 3);
+            col = i % 3;
+
+            gameRepresentation[row][col] = player;
+            optionPool.delete(i); // remove value from optionPool set
+            ourTurn = false;
+            moveCount -= 1; // move towards end game
+
+            console.log(gameRepresentation); // state check
+            console.log(optionPool); // state check
+            checkWin();
+            // if player wins, end game
+            if (gameOver) {
+              displayWinner("Player");
+            }
+            botMove();
+          }
+        })
+      }
+    }
+
+    playGame();
+
+  </script>
+</body>
+</html>

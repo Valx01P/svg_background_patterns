@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .board {
+      border: 1px solid black;
+      border-collapse: collapse;
+    }
+
+    .board tr td {
+      border: 2px solid black;
+      width: 60px;
+      height: 60px;
+      padding: 20px;
+      text-align: center;
+      font-size: 2.4rem;
+    }
+
+  </style>
+</head>
+<body>
+  
+  <h1>Tic Tac Toe</h1>
+  <table class="board">
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </table>
+  <script>
+    const board = document.querySelector('.board');
+    const cells = board.querySelectorAll('td');
+    let player = 'X';
+    let ourTurn = true;
+    let moveCount = cells.length
+    let gameRepresentation = [
+      ["", "", ""],
+      ["", "", ""],
+      ["", "", ""]
+    ]
+
+    let gameOver = false;
+
+    for (let i = 0; i < cells.length; i++) {
+      cells[i].addEventListener('click', () => {
+        // what we do onclick
+        if (ourTurn && !gameOver) {
+          alert(cells.length)
+          cells[i].textContent = player; // addX alt
+          // let row = i / 3;
+          // let col = i % 3;
+          // gameRepresentation[row][column] = player;
+          ourTurn = false;
+          moveCount -= 1;
+        }
+      })
+    }
+
+    // while (!gameOver) {
+    //   if (ourTurn == false) {
+    //     botMove();
+    //   }
+    //   // setTimeout(1000)
+    // }
+
+
+    const game = () => {
+
+    }
+
+    const addX = () => {
+
+    }
+
+    const botMove = () => {
+
+    }
+
+  </script>
+</body>
+</html>
